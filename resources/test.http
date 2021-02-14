@@ -1,0 +1,13 @@
+@host = http://127.0.0.1:8787
+
+POST {{host}}
+Content-Type: application/json
+
+{
+  "url": "https://www.google.at",
+  "itemSelector": "#series-list .item-text",
+  "propertySelectors": {
+      "title":".item-title",
+      "chapter":".item-volch a"
+  }
+}
