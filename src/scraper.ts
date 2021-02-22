@@ -1,20 +1,5 @@
-interface RequestBody {
-  url: string
-  itemSelector: string
-  propertySelectors: PropertySelectors
-}
-
-interface PropertySelectors {
-  [property: string]: string | PropertySelector
-}
-
-interface PropertySelector {
-  selector: string
-  attribute?: string
-  regex?: string
-}
-
 import { HTMLElement, parse, valid } from 'node-html-parser'
+import { PropertySelector, PropertySelectors, RequestBody } from './models'
 
 function getValue(
   element: HTMLElement,
@@ -48,7 +33,7 @@ function toObject(element: HTMLElement, propertySelectors: PropertySelectors) {
   return item
 }
 
-async function getHTML(body: RequestBody) {
+export async function scrapeHTML(body: RequestBody) {
   const htmlRequest = await fetch(body.url, {
     headers: {
       'content-type': 'text/html;charset=UTF-8',
@@ -67,23 +52,4 @@ async function getHTML(body: RequestBody) {
   const items = root.querySelectorAll(body.itemSelector)
 
   return items.map((_) => toObject(_, body.propertySelectors))
-}
-
-export async function handleRequest(request: Request): Promise<Response> {
-  if (request.method === 'POST') {
-    const body: RequestBody = await request.json()
-
-    const json = await getHTML(body)
-
-    return new Response(JSON.stringify(json), {
-      headers: {
-        'content-type': 'application/json;charset=UTF-8',
-      },
-    })
-  }
-
-  return new Response(`no json post`, {
-    status: 400,
-    headers: { 'content-type': 'application/json;charset=UTF-8' },
-  })
 }
